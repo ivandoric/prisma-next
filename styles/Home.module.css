@@ -1,19 +1,47 @@
 .container {
-  min-height: 100vh;
-  padding: 0 0.5rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+    width: 960px;
+    margin: 0 auto;
 }
 
-.main {
-  padding: 5rem 0;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+.movielist {
+    list-style: none;
+    padding: 0;
+    margin: 40px 0;
+}
+
+.movielist li {
+    margin-bottom: 20px;
+}
+
+.movielist span {
+    display: block;
+    margin-bottom: 5px;
+}
+
+
+.movieform {
+    background: #efefef;
+    padding: 20px;
+    max-width: 500px;
+}
+
+.movieform input, .movieform textarea {
+    padding: 10px;
+    border: 1px solid #ccc;
+    margin-bottom: 20px;
+    width: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+    font-size: 16px;
+}
+
+.movieform button {
+    border: none;
+    border-radius: 4px;
+    padding: 10px 20px;
+    background: #0E9D58;
+    color: #ffffff;
+    font-size: 16px;
 }
 
 .footer {

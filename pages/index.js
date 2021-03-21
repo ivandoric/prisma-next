@@ -1,65 +1,68 @@
-import Head from 'next/head'
-import styles from '../styles/Home.module.css'
+import Head from "next/head";
+import styles from "../styles/Home.module.css";
+import {useState} from 'react'
+import Link from 'next/link'
 
-export default function Home() {
-  return (
-    <div className={styles.container}>
-      <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+import {PrismaClient} from '@prisma/client'
 
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
+const prisma = new PrismaClient()
 
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
+export default function Home({ data }) {
+    const [formData, setFormData] = useState({})
+    const [movies, setMovies] = useState(data)
 
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
+    async function saveMovie(e) {
+        e.preventDefault()
+        setMovies([...movies, formData])
+        const response = await fetch('/api/movies', {
+            method: 'POST',
+            body: JSON.stringify(formData)
+        })
+        
+        return await response.json()
+    }
 
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
+    return (
+        <div className={styles.container}>
+            <Head>
+                <title>Movie list</title>
+                <link rel="icon" href="/favicon.ico" />
+            </Head>
 
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
+            <main className={styles.main}>
+                <ul className={styles.movielist}>
+                    {movies.map(item => (
+                        <li key="item.id">
+                            <span><strong>{item.title}</strong></span>
+                            <span>{item.year}</span>
+                            <span>{item.description}</span>
+                            <Link href={`/movies/${item.slug}`}>
+                                <a>More about this movie</a>
+                            </Link>
+                        </li>
+                    ))}
+                </ul>
 
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
+                <form className={styles.movieform} onSubmit={saveMovie}>
+                    <input type="text" placeholder="Title" name="title" onChange={e => setFormData({ ...formData, title: e.target.value })}/>
+                    <input type="text" placeholder="Year" name="year" onChange={e => setFormData({ ...formData, year: +e.target.value })} />
+                    <textarea name="description" id="" cols="30" rows="10" placeholder="Description" onChange={e => setFormData({ ...formData, description: e.target.value })} />
+                    <input type="text" placeholder="Slug" name="slug" onChange={e => setFormData({ ...formData, slug: e.target.value })} />
+                    <button type="submit">Add movie</button>
+                </form>
+
+            </main>
         </div>
-      </main>
+    );
+}
 
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
-        </a>
-      </footer>
-    </div>
-  )
+export async function getServerSideProps() {
+
+    const movies = await prisma.movie.findMany()
+
+    return {
+        props: {
+            data: movies
+        }
+    }
 }
